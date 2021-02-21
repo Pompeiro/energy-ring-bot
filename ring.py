@@ -42,7 +42,7 @@ def activate_window(mode, delay=0.05):
 
     Parameters
     ----------
-    mode : "client" or "game"
+    mode : "tibia"
     delay : Delay between actions. The default is 0.5.
 
     Returns
@@ -71,23 +71,39 @@ def activate_window(mode, delay=0.05):
 def back_to_mouse_position(func, **kwargs):
     logging.debug("Function back_to_mouse_position() called.")
     start = pyautogui.position()
-    print("start: ",start)
     logging.info("Start mouse position: %s",start)
     func(**kwargs)
     pyautogui.moveTo(start)
     logging.info("Start mouse position: %s",start)
 
-    logging.debug("Function back_to_mouse_position() called.")
+    logging.debug("Function back_to_mouse_position() end.")
 
 
 def slide(start,meta):
-    print("start,meta:",start,meta)
+    logging.debug("Function slide() called.")
+    logging.info("start = %s meta = %s", start, meta)
+    if start == RING_SLOT:
+        logging.info("start position: ring slot")
+    elif start == ARROW_SLOT:
+        logging.info("start position: arrow slot")
+    elif start == BACKPACK_FIRST_SLOT:
+        logging.info("start position: bp first slot")
+    else:
+        logging.info("start position not in predefined positions")
+    if meta == RING_SLOT:
+        logging.info("meta position: ring slot")
+    elif meta == ARROW_SLOT:
+        logging.info("meta position: arrow slot")
+    elif meta == BACKPACK_FIRST_SLOT:
+        logging.info("meta position: bp first slot")
     # activate_window(mode="tibia")
     pyautogui.moveTo(start)
+    time.sleep(0.03)
     pyautogui.mouseDown()
     pyautogui.moveTo(meta)
     pyautogui.mouseUp()
-
+    time.sleep(0.03)
+    logging.debug("Function slide() end.")
 
 
 def check_buff():
@@ -112,20 +128,20 @@ def slide_on_hotkey():
     ring_center = pyautogui.locateCenterOnScreen(
         ERING_IMG, confidence=0.75, region=BACKPACK_AND_SLOTS_REGION
     )
-    print("ring_center: ",ring_center)
+    logging.info("ring_center: %s",ring_center)
     if is_ring_empty():
-        print("Ring not in eq wearing")
+        logging.info("Ring slot is empty")
         back_to_mouse_position(func=slide, start=ring_center, meta=RING_SLOT)
 
 
     else:
-        print("ring  equiped")
+        logging.info("ring slot is occupied")
         if is_arrow_empty():
-            print("arrow slot empty")
+            logging.info("arrow slot is empty")
 
             back_to_mouse_position(func=slide, start=ring_center, meta=ARROW_SLOT)
         else:
-            print("Arrow slot not empty")
+            logging.info("Arrow slot is occupied")
             back_to_mouse_position(func=slide, start=ring_center, meta=BACKPACK_FIRST_SLOT)
 
 
@@ -134,7 +150,7 @@ def main():
     time.sleep(1)
     pyautogui.moveTo(is_arrow_empty())
     while True:
-        if keyboard.is_pressed("p"):
+        if keyboard.is_pressed("f8"):
             slide_on_hotkey()
 
 
